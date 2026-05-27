@@ -1,0 +1,54 @@
+name: CI Pipeline
+
+# 1. 在 push 時自動執行 (20%)
+on:
+  push:
+    branches: [ "**" ] # 任何分支 push 都會觸發
+
+jobs:
+  ci-check:
+    runs-on: ubuntu-latest
+
+    # 允許 Action 寫入 Check 報告（測試結果視覺化需要此權限）
+    permissions:
+      checks: write
+      statuses: write
+
+    steps:
+      # 複製專案原始碼
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 設定 Node.js 環境
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm' # 自動快取，加速安裝
+
+      # 安裝專案套件
+      - name: Install dependencies
+        run: npm ci
+
+      # 2. TypeScript typecheck & 3. 失敗時顯示失敗 (40%)
+      - name: TypeScript typecheck
+        run: npm run typecheck
+
+      # 2. Prettier check & 3. 失敗時顯示失敗 (40%)
+      - name: Prettier check
+        run: npm run format:check
+
+      # 2. Test & 3. 失敗時顯示失敗 (40%)
+      # 注意：這裡需要產生 JUnit XML 格式的報告供後續步驟使用
+      - name: Run Tests
+        run: npm run test -- --ci --reporter=default --reporter=junit --outputFile=vitest-report.xml
+        env:
+          CI: true
+
+      # 4. 將測試結果顯示於 GitHub Actions 結果頁面 (20%)
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: success() || failure() # 確保測試失敗時也能產出報告
+        with:
+          name: JavaScript Tests Report
+          report_paths: '**/vitest-report.xml'
