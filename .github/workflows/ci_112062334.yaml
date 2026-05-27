@@ -45,7 +45,7 @@ jobs:
       # 2. Test & 3. 失敗時顯示失敗 (40%)
       # 注意：這裡需要產生 JUnit XML 格式的報告供後續步驟使用
       - name: Run Tests
-        run: npm run test -- --ci --reporter=default --reporter=junit --outputFile=vitest-report.xml
+        run: npm run test -- --reporter=default --reporter=junit --outputFile=vitest-report.xml
         env:
           CI: true
 
