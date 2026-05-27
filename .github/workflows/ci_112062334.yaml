@@ -12,10 +12,6 @@ jobs:
   ci-check:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: cicd-lab
-
     # 允許 Action 寫入 Check 報告（測試結果視覺化需要此權限）
     permissions:
       checks: write
