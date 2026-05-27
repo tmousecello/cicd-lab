@@ -5,9 +5,16 @@ on:
   push:
     branches: [ "**" ] # 任何分支 push 都會觸發
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   ci-check:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: cicd-lab
 
     # 允許 Action 寫入 Check 報告（測試結果視覺化需要此權限）
     permissions:
@@ -23,8 +30,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm' # 自動快取，加速安裝
+          cache-dependency-path: 'package-lock.json'
 
       # 安裝專案套件
       - name: Install dependencies
@@ -50,5 +58,5 @@ jobs:
         uses: mikepenz/action-junit-report@v4
         if: success() || failure() # 確保測試失敗時也能產出報告
         with:
-          name: JavaScript Tests Report
+          check_name: JavaScript Tests Report
           report_paths: '**/vitest-report.xml'
