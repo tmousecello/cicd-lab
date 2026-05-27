@@ -3,7 +3,7 @@ name: CI Pipeline
 # 1. 在 push 時自動執行 (20%)
 on:
   push:
-    branches: [ "**" ] # 任何分支 push 都會觸發
+    branches: ['**'] # 任何分支 push 都會觸發
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
